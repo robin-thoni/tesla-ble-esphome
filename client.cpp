@@ -89,7 +89,7 @@ int Client::LoadPrivateKey(const uint8_t *private_key_buffer,
   unsigned char password[0];
   return_code = mbedtls_pk_parse_key(
       &this->private_key_context_, private_key_buffer, private_key_length,
-      password, 0, mbedtls_ctr_drbg_random, &this->drbg_context_);
+      password, 0);
 
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
@@ -128,8 +128,8 @@ int Client::GetPrivateKey(unsigned char *output_buffer,
  */
 int Client::GeneratePublicKey() {
   int return_code = mbedtls_ecp_point_write_binary(
-      &mbedtls_pk_ec(this->private_key_context_)->private_grp,
-      &mbedtls_pk_ec(this->private_key_context_)->private_Q,
+      &mbedtls_pk_ec(this->private_key_context_)->grp,
+      &mbedtls_pk_ec(this->private_key_context_)->Q,
       MBEDTLS_ECP_PF_UNCOMPRESSED, &this->public_key_size_, this->public_key_,
       sizeof(this->public_key_));
 
@@ -150,13 +150,13 @@ int Client::GenerateKeyId() {
   mbedtls_sha1_context sha1_context;
   mbedtls_sha1_init(&sha1_context);
 
-  int return_code = mbedtls_sha1_starts(&sha1_context);
+  int return_code = mbedtls_sha1_starts_ret(&sha1_context);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
   }
 
-  return_code = mbedtls_sha1_update(&sha1_context, this->public_key_,
+  return_code = mbedtls_sha1_update_ret(&sha1_context, this->public_key_,
                                     this->public_key_size_);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
@@ -164,7 +164,7 @@ int Client::GenerateKeyId() {
   }
 
   unsigned char buffer[20];
-  return_code = mbedtls_sha1_finish(&sha1_context, buffer);
+  return_code = mbedtls_sha1_finish_ret(&sha1_context, buffer);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
@@ -190,7 +190,7 @@ int Client::LoadTeslaKey(const uint8_t *public_key_buffer,
   size_t temp_shared_secret_length = 0;
   mbedtls_ecp_keypair_init(&this->tesla_key_);
 
-  int return_code = mbedtls_ecp_group_load(&this->tesla_key_.private_grp,
+  int return_code = mbedtls_ecp_group_load(&this->tesla_key_.grp,
                                            MBEDTLS_ECP_DP_SECP256R1);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
@@ -198,7 +198,7 @@ int Client::LoadTeslaKey(const uint8_t *public_key_buffer,
   }
 
   return_code = mbedtls_ecp_point_read_binary(
-      &this->tesla_key_.private_grp, &this->tesla_key_.private_Q,
+      &this->tesla_key_.grp, &this->tesla_key_.Q,
       public_key_buffer, public_key_size);
 
   if (return_code != 0) {
@@ -238,20 +238,20 @@ int Client::LoadTeslaKey(const uint8_t *public_key_buffer,
   mbedtls_sha1_context sha1_context;
   mbedtls_sha1_init(&sha1_context);
 
-  return_code = mbedtls_sha1_starts(&sha1_context);
+  return_code = mbedtls_sha1_starts_ret(&sha1_context);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
   }
 
-  return_code = mbedtls_sha1_update(&sha1_context, temp_shared_secret,
+  return_code = mbedtls_sha1_update_ret(&sha1_context, temp_shared_secret,
                                     temp_shared_secret_length);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
   }
 
-  return_code = mbedtls_sha1_finish(&sha1_context, this->shared_secret_);
+  return_code = mbedtls_sha1_finish_ret(&sha1_context, this->shared_secret_);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
@@ -293,37 +293,30 @@ int Client::Encrypt(unsigned char *input_buffer, size_t input_buffer_length,
     return 1;
   }
 
+  unsigned char add[0];
   return_code = mbedtls_gcm_starts(&aes_context, MBEDTLS_GCM_ENCRYPT, nonce,
-                                   sizeof(nonce));
+                                   sizeof(nonce), add, 0);
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
   }
 
   return_code =
-      mbedtls_gcm_update(&aes_context, input_buffer, input_buffer_length,
-                         output_buffer, output_buffer_length, output_length);
+      mbedtls_gcm_update(&aes_context, input_buffer_length, input_buffer,
+                         output_buffer);
+  *output_length = input_buffer_length;
 
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
   }
-
-  size_t finish_buffer_length = 0;
-  unsigned char finish_buffer[15];
 
   return_code =
-      mbedtls_gcm_finish(&aes_context, finish_buffer, sizeof(finish_buffer),
-                         &finish_buffer_length, signature_buffer, 16);
+      mbedtls_gcm_finish(&aes_context, signature_buffer, 16);
 
   if (return_code != 0) {
     printf("Last error was: -0x%04x\n\n", (unsigned int)-return_code);
     return 1;
-  }
-
-  if (finish_buffer_length > 0) {
-    memcpy(output_buffer + *output_length, finish_buffer, finish_buffer_length);
-    *output_length = output_buffer_length + finish_buffer_length;
   }
 
   mbedtls_gcm_free(&aes_context);
