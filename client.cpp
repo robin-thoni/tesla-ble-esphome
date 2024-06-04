@@ -7,8 +7,8 @@
 #include <mbedtls/gcm.h>
 #include <mbedtls/pk.h>
 #include <mbedtls/sha1.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
+#include "pb_decode.h"
+#include "pb_encode.h"
 
 #include "utils.h"
 #include "vcsec.pb.h"
