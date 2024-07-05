@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package VCSEC;
 
+import 'nanopb.proto';
+
 option java_outer_classname = "VCSEC";
 option java_package = "com.teslamotors.protocol";
 
@@ -414,7 +416,7 @@ enum KeyFormFactor {
 }
 
 message KeyIdentifier {
-	bytes publicKeySHA1 = 1;
+	bytes publicKeySHA1 = 1 [(nanopb).max_size = 4, (nanopb).fixed_length = true];
 }
 
 message KeyIdentity {
@@ -583,7 +585,7 @@ enum OperationStatus_E {
 
 message PermissionChange {
 	PublicKey key = 1;
-	repeated WhitelistKeyPermission_E permission = 2;
+	repeated WhitelistKeyPermission_E permission = 2 [(nanopb).max_count = 10];
 	uint32 secondsToBeActive = 3;
 	Role keyRole = 4;
 }
@@ -593,7 +595,7 @@ message PersonalizationInformation {
 }
 
 message PublicKey {
-	bytes PublicKeyRaw = 1;
+	bytes PublicKeyRaw = 1 [(nanopb).max_size = 65];
 }
 
 enum RCI_control_E {
@@ -683,7 +685,7 @@ enum Role {
 message SessionInfo {
 	bytes token = 1;
 	uint32 counter = 2;
-	bytes publicKey = 3;
+	bytes publicKey = 3 [(nanopb).max_size = 65];
 }
 
 enum Session_Info_Status {
@@ -720,10 +722,10 @@ enum SignatureType {
 
 message SignedMessage {
 	bytes token = 1;
-	bytes protobufMessageAsBytes = 2;
+	bytes protobufMessageAsBytes = 2 [(nanopb).max_size = 100];
 	SignatureType signatureType = 3;
-	bytes signature = 4;
-	bytes keyId = 5;
+	bytes signature = 4 [(nanopb).max_size = 16];
+	bytes keyId = 5 [(nanopb).max_size = 4];
 	uint32 counter = 6;
 }
 
@@ -1032,7 +1034,7 @@ message WhitelistEntryInfo {
 
 message WhitelistInfo {
 	uint32 numberOfEntries = 1;
-	repeated KeyIdentifier whitelistEntries = 2;
+	repeated KeyIdentifier whitelistEntries = 2 [(nanopb).max_count = 20];
 	uint32 slotMask = 3;
 }
 
