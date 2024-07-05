@@ -1,7 +1,7 @@
 #ifndef TESLA_BLE_CLIENT_H_INCLUDED
 #define TESLA_BLE_CLIENT_H_INCLUDED
 
-#include "vcsec.pb.h"
+#include "VCSECv4.20.69.pb.h"
 
 #include <string>
 
