@@ -21,6 +21,8 @@ namespace TeslaBLE {
  * @param counter Last known counter sent by the carz
  * @return void
  */
+void Client::SetCounter(const u_int32_t counter) {
+  this->counter_ = counter;
 }
 
 u_int32_t Client::GetCounter() const {
@@ -683,12 +685,12 @@ int Client::BuildSignedToMessage(VCSEC_UnsignedMessage *message,
  * @param output_length Size of the output buffer
  * @return int result code 0 for successful
  */
-int Client::BuildActionMessage(const VCSEC_RKEAction_E *action,
+int Client::BuildActionMessage(const VCSEC_RKEAction_E action,
                                unsigned char *output_buffer,
                                size_t *output_length) {
   VCSEC_UnsignedMessage unsigned_message = VCSEC_UnsignedMessage_init_default;
   unsigned_message.which_sub_message = VCSEC_UnsignedMessage_RKEAction_tag;
-  unsigned_message.sub_message.RKEAction = *action;
+  unsigned_message.sub_message.RKEAction = action;
 
   return this->BuildSignedToMessage(&unsigned_message, output_buffer,
                                     output_length);
@@ -704,24 +706,20 @@ int Client::BuildActionMessage(const VCSEC_RKEAction_E *action,
  * @return int result code 0 for successful
  */
 int Client::BuildAuthenticationResponse(
-    const VCSEC_AuthenticationLevel_E *level, unsigned char *output_buffer,
+    const VCSEC_AuthenticationLevel_E level, unsigned char *output_buffer,
     size_t *output_length) {
   VCSEC_UnsignedMessage unsigned_message = VCSEC_UnsignedMessage_init_default;
-  unsigned_message.which_sub_message =
-      VCSEC_UnsignedMessage_authenticationResponse_tag;
-  unsigned_message.sub_message.authenticationResponse.authenticationLevel =
-      *level;
+  unsigned_message.which_sub_message = VCSEC_UnsignedMessage_authenticationResponse_tag;
+  unsigned_message.sub_message.authenticationResponse.authenticationLevel = level;
 
-  return this->BuildSignedToMessage(&unsigned_message, output_buffer,
-                                    output_length);
+  return this->BuildSignedToMessage(&unsigned_message, output_buffer, output_length);
 }
 
 int Client::BuildInformationRequestMessage(
-    const VCSEC_InformationRequestType *information_request_type,
+    const VCSEC_InformationRequestType information_request_type,
     unsigned char *output_buffer, size_t *output_length) {
-  VCSEC_InformationRequest information_request =
-      VCSEC_InformationRequest_init_default;
-  information_request.informationRequestType = *information_request_type;
+  VCSEC_InformationRequest information_request = VCSEC_InformationRequest_init_default;
+  information_request.informationRequestType = information_request_type;
 
   VCSEC_KeyIdentifier key_identifier = VCSEC_KeyIdentifier_init_default;
   memcpy(key_identifier.publicKeySHA1, this->key_id_, 4);
@@ -729,11 +727,9 @@ int Client::BuildInformationRequestMessage(
   information_request.which_sub_message = VCSEC_InformationRequest_keyId_tag;
 
   VCSEC_UnsignedMessage unsigned_message = VCSEC_UnsignedMessage_init_default;
-  unsigned_message.which_sub_message =
-      VCSEC_UnsignedMessage_InformationRequest_tag;
+  unsigned_message.which_sub_message = VCSEC_UnsignedMessage_InformationRequest_tag;
   unsigned_message.sub_message.InformationRequest = information_request;
 
-  return this->BuildSignedToMessage(&unsigned_message, output_buffer,
-                                    output_length);
+  return this->BuildSignedToMessage(&unsigned_message, output_buffer, output_length);
 }
 }  // namespace TeslaBLE

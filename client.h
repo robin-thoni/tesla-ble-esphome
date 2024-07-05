@@ -39,7 +39,7 @@ class Client {
  public:
   int CreatePrivateKey();
 
-  void SetCounter(const u_int32_t *counter);
+  void SetCounter(const u_int32_t counter);
 
   u_int32_t GetCounter() const;
 
@@ -68,18 +68,18 @@ class Client {
                              unsigned char *output_buffer,
                              size_t *output_length);
 
-  int BuildActionMessage(const VCSEC_RKEAction_E *action,
+  int BuildActionMessage(const VCSEC_RKEAction_E action,
                          unsigned char *output_buffer, size_t *output_length);
 
   int BuildSignedToMessage(VCSEC_UnsignedMessage *message,
                            unsigned char *output, size_t *output_length);
 
-  int BuildAuthenticationResponse(const VCSEC_AuthenticationLevel_E *level,
+  int BuildAuthenticationResponse(const VCSEC_AuthenticationLevel_E level,
                                   unsigned char *output_buffer,
                                   size_t *output_length);
 
   int BuildInformationRequestMessage(
-      const VCSEC_InformationRequestType *information_request_type,
+      const VCSEC_InformationRequestType information_request_type,
       unsigned char *output_buffer, size_t *output_length);
 };
 }  // namespace TeslaBLE
