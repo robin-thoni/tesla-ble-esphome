@@ -13,10 +13,35 @@ external_components:
       type: local
       path: custom_components
 
-# Set something like
-# - lambda: |
-#     id(tesla_ble_id).test();
-# somewhere to try to interract w/ the car
+# Set something like this to interract w/ the car
+# First, use "Connect to car" to connect the BLE client
+# If this is the first time, tap your card on the reader in the car to confirm the new key
+# If it's already paired, no further action are required
+# Then you can lock/unlock the car w/ the buttons below
+button:
+  - platform: template
+    name: Connect to car
+    on_press: 
+      then:
+        - esp32_ble_tracker.stop_scan:
+        - ble_client.connect: ble_tesla_id
+  - platform: template
+    name: Disconnect from car
+    on_press: 
+      then:
+        - ble_client.disconnect: ble_tesla_id
+  - platform: template
+    name: Lock the car
+    on_press: 
+      then:
+        - lambda: |
+            id(tesla_ble_id).lock();
+  - platform: template
+    name: Unlock the car
+    on_press: 
+      then:
+        - lambda: |
+            id(tesla_ble_id).unlock();
 
 ble_client:
   - mac_address: AA:BB:CC:DD:EE:FF # Set you car BLE MAC address here
