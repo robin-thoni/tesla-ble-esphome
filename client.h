@@ -41,6 +41,10 @@ class Client {
 
   void SetCounter(const u_int32_t *counter);
 
+  u_int32_t GetCounter() const;
+
+  const unsigned char* GetKeyId() const;
+
   int LoadPrivateKey(const uint8_t *private_key_buffer, size_t key_size);
 
   int GetPrivateKey(unsigned char *output_buffer, size_t buffer_length,
