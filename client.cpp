@@ -11,7 +11,6 @@
 #include "pb_encode.h"
 
 #include "utils.h"
-#include "vcsec.pb.h"
 
 namespace TeslaBLE {
 
