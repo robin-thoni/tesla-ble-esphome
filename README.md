@@ -40,3 +40,12 @@ install nanopb-0.4.7
 ```shell
 nanopb-0.4.7-linux-x86/generator-bin/nanopb_generator VCSECv4.20.69.proto -L quote
 ```
+
+### Refs
+
+- https://github.com/nanopb/nanopb
+- https://jpa.kapsi.fi/nanopb/docs/concepts.html
+- https://github.com/trifinite/vcsec-archive
+- https://github.com/teslamotors/vehicle-command
+- https://github.com/pmdroid/tesla-ble
+- https://teslabtapi.lexnastin.com/docs/start
