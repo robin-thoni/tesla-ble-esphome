@@ -61,7 +61,8 @@ class Client {
                                    size_t input_size,
                                    VCSEC_FromVCSECMessage *output);
 
-  int BuildEphemeralKeyMessage(unsigned char *output_buffer,
+  int BuildInformationRequestUnsignedMessage(VCSEC_InformationRequestType type,
+                                             unsigned char *output_buffer,
                                size_t *output_length);
 
   int BuildUnsignedToMessage(VCSEC_UnsignedMessage *message,

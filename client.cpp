@@ -496,12 +496,13 @@ int Client::ParseFromVCSECMessage(unsigned char *input_buffer,
  * @param output_length Size of the output buffer
  * @return int result code 0 for successful
  */
-int Client::BuildEphemeralKeyMessage(unsigned char *output_buffer,
+int Client::BuildInformationRequestUnsignedMessage(
+    VCSEC_InformationRequestType type,
+    unsigned char *output_buffer,
                                      size_t *output_length) {
   VCSEC_InformationRequest informationRequest =
       VCSEC_InformationRequest_init_default;
-  informationRequest.informationRequestType =
-      VCSEC_InformationRequestType_INFORMATION_REQUEST_TYPE_GET_EPHEMERAL_PUBLIC_KEY;
+  informationRequest.informationRequestType = type;
 
   VCSEC_KeyIdentifier keyIdentifier = VCSEC_KeyIdentifier_init_default;
   memcpy(keyIdentifier.publicKeySHA1, this->key_id_, 4);
