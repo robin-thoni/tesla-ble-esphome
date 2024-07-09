@@ -66,7 +66,7 @@ PB_BIND(VCSEC_DeviceMotion, VCSEC_DeviceMotion, AUTO)
 PB_BIND(VCSEC_FromRCI, VCSEC_FromRCI, AUTO)
 
 
-PB_BIND(VCSEC_FromVCSECMessage, VCSEC_FromVCSECMessage, 2)
+PB_BIND(VCSEC_FromVCSECMessage, VCSEC_FromVCSECMessage, AUTO)
 
 
 PB_BIND(VCSEC_Genealogy, VCSEC_Genealogy, AUTO)
@@ -240,7 +240,7 @@ PB_BIND(VCSEC_VerifyAndInstallApp, VCSEC_VerifyAndInstallApp, AUTO)
 PB_BIND(VCSEC_WhitelistEntryInfo, VCSEC_WhitelistEntryInfo, AUTO)
 
 
-PB_BIND(VCSEC_WhitelistInfo, VCSEC_WhitelistInfo, 2)
+PB_BIND(VCSEC_WhitelistInfo, VCSEC_WhitelistInfo, AUTO)
 
 
 PB_BIND(VCSEC_WhitelistOperation, VCSEC_WhitelistOperation, AUTO)
