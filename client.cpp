@@ -615,9 +615,6 @@ int Client::BuildSignedToMessage(VCSEC_UnsignedMessage *message,
     return 1;
   }
 
-  TeslaBLE::DumpHexBuffer("before", vcsec_message_message,
-                          vcsec_message_stream.bytes_written);
-
   size_t encrypted_output_length = 0;
   unsigned char signature[16];
   unsigned char signed_message_buffer[vcsec_message_stream.bytes_written];
