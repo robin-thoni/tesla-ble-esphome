@@ -23,5 +23,6 @@ CONFIG_SCHEMA = (
 )
 
 async def to_code(config):
+    cg.add_library("nanopb/Nanopb", "0.4.7")
     var = cg.new_Pvariable(config[CONF_ID])
     await ble_client.register_ble_node(var, config)
